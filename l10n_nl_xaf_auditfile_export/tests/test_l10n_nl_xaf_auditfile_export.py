@@ -1,7 +1,6 @@
 # Copyright 2018-2020 Onestein (<https://www.onestein.eu>)
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import base64
 import os
 import subprocess
 from datetime import timedelta
@@ -19,7 +18,7 @@ from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
 def xaf_xpath(auditfile, query):
-    with ZipFile(BytesIO(base64.b64decode(auditfile)), "r") as z:
+    with ZipFile(BytesIO(auditfile.content), "r") as z:
         contents = z.read(z.filelist[-1]).decode()
         parser = etree.XMLParser(
             ns_clean=True, recover=True, encoding="utf-8", remove_blank_text=True
@@ -104,7 +103,7 @@ class TestXafAuditfileExport(AccountTestInvoicingCommon):
         self.assertFalse(record.unit4)
         self.assertTrue(record.auditfile_success)
 
-        zf = BytesIO(base64.b64decode(record.auditfile))
+        zf = BytesIO(record.auditfile.content)
         with ZipFile(zf, "r") as archive:
             filelist = archive.filelist
             contents = archive.read(filelist[-1]).decode()
@@ -150,7 +149,7 @@ class TestXafAuditfileExport(AccountTestInvoicingCommon):
         self.assertTrue(record.unit4)
 
         if record.auditfile_name[-4:] == ".zip":
-            zf = BytesIO(base64.b64decode(record.auditfile))
+            zf = BytesIO(record.auditfile.content)
             with ZipFile(zf, "r") as archive:
                 filelist = archive.filelist
                 contents = archive.read(filelist[-1]).decode()

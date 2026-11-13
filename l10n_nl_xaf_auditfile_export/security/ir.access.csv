@@ -1,0 +1,2 @@
+id,name,model_id,group_id/id,operation,domain
+crud_xaf_auditfile_export,Crud auditfile exports,xaf.auditfile.export,account.group_account_manager,crud,

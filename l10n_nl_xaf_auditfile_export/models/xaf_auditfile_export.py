@@ -17,13 +17,16 @@ from dateutil.rrule import MONTHLY, rrule
 from lxml import etree
 
 from odoo import _, api, exceptions, fields, models, release
-from odoo.tools import file_path
+from odoo.tools import file_path, frozendict
+
+# odoo.models.PREFETCH_MAX was removed in 20.0; keep the former batch size
+CHUNK_SIZE = 1000
 
 
 def chunks(items, n=None):
     """Yield successive n-sized chunks from items."""
     if n is None:
-        n = models.PREFETCH_MAX
+        n = CHUNK_SIZE
     for i in range(0, len(items), n):
         yield items[i : i + n]
 
@@ -153,12 +156,18 @@ class XafAuditfileExport(models.Model):
         This is a near-copy of ir.qweb#_render up until joining the generated fragments
         to one big string.
         """
+        values = values.copy() if values else {}
         irQweb = (
             self.env["ir.qweb"].with_context(**options)._prepare_environment(values)
         )
-        template_functions, def_name = irQweb._compile(template)
-        render_template = template_functions[def_name]
-        return render_template(irQweb, values)
+        irQweb = irQweb.with_context(_qweb_error_path_xml=[None, None, None])
+        root_values = frozendict(values.copy())
+        process = {
+            "qweb_loaded_functions": {},
+            "qweb_loaded_options": {},
+            "qweb_loaded_codes": {},
+        }
+        return irQweb._render_iterall(template, None, values, root_values, process)
 
     def _get_auditfile_attachment(self, create=True):
         self.ensure_one()
