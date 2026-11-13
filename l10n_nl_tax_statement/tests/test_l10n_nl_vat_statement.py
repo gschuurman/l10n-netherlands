@@ -129,7 +129,7 @@ class TestVatStatement(TransactionCase):
         )
 
     def _create_test_invoice(self):
-        self.company_parent.compute_account_tax_fiscal_country()
+        self.company_parent._compute_account_tax_fiscal_country()
 
         partner = self.env["res.partner"].create({"name": "Test partner"})
         self.env["account.account"].create(

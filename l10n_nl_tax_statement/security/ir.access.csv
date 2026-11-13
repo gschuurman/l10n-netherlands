@@ -1,0 +1,4 @@
+id,name,model_id,group_id/id,operation,domain
+access_l10n_nl_vat_statement_line,access_l10n_nl_vat_statement_line,l10n.nl.vat.statement.line,account.group_account_manager,crud,
+access_l10n_nl_vat_statement,access_l10n_nl_vat_statement,l10n.nl.vat.statement,account.group_account_manager,crud,
+tax_statement_security_rule,NL Tax Statement multicompany,l10n.nl.vat.statement,,crud,"['|',('company_id','=',False),('company_id', 'in', company_ids)]"
